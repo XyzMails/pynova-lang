@@ -3,6 +3,7 @@
 import sys
 import subprocess
 import time
+import getpass
 
 class PynovaInterpreter:
     def __init__(self):
@@ -16,7 +17,8 @@ class PynovaInterpreter:
                 print(result)
             except Exception as e:
                 print(f"Error: {e}")
-        elif statement.startswith("print"):
+
+        elif statement.startswith("print "):
             value = statement[6:].strip()
             if value.startswith('@'):
                 var_name = value[1:]
@@ -26,6 +28,16 @@ class PynovaInterpreter:
                     print(f"Variable '{var_name}' not found.")
             else:
                 print(value)
+
+        elif statement.startswith("input "):
+            input_name = statement[6:].strip()
+            user_input = input(f"{input_name}: ")
+            self.variables[input_name] = user_input
+
+        elif statement.startswith("whoami"):
+            user = getpass.getuser()
+            print(user)
+
         elif statement.startswith("wait "):
             amount = statement[5:].strip()
             if amount.startswith('@'):
@@ -41,6 +53,7 @@ class PynovaInterpreter:
                     time.sleep(wait_time)
                 except ValueError:
                     print("Invalid amount or variable.")
+
         elif statement.startswith("ping "):
             site = statement[5:].strip()
             try:
@@ -48,17 +61,21 @@ class PynovaInterpreter:
                 print(result.stdout.decode())
             except Exception as e:
                 print(f"Error: {e}")
+
         elif statement == "help":
             print("pynova Commands:")
             print("- math <expression>: Evaluate a mathematical expression.")
             print("- print <text or variable>: Print text or the value of a variable.")
+            print("- input <inputname>: Prompt the user for input and store it in the specified variable.")
             print("- wait <amount or variable>: Pause execution for a specified amount of time or the value of a variable.")
             print("- ping <site>: Ping a website to check its response time.")
             print("- deletevar <variable>: Delete a variable.")
             print("- listvar: List all defined variables.")
             print("- readfile <filename>: Read the contents of a file.")
             print("- writefile <filename>: Write text or variable contents to a file.")
+            print("- whoami: Display your user.")
             print("- help: Display this help message.")
+
         elif statement.startswith("deletevar "):
             var_name = statement[10:].strip()
             if var_name in self.variables:
@@ -66,10 +83,12 @@ class PynovaInterpreter:
                 print(f"Variable '{var_name}' deleted.")
             else:
                 print(f"Variable '{var_name}' not found.")
+
         elif statement == "listvar":
             print("Defined Variables:")
             for var_name, var_value in self.variables.items():
                 print(f"{var_name}: {var_value}")
+
         elif statement.startswith("readfile "):
             filename = statement[9:].strip()
             try:
@@ -78,6 +97,7 @@ class PynovaInterpreter:
                     print(content)
             except FileNotFoundError:
                 print(f"File '{filename}' not found.")
+
         elif statement.startswith("writefile "):
             parts = statement.split(" ", 1)
             if len(parts) == 2:
@@ -91,16 +111,19 @@ class PynovaInterpreter:
                     print(f"Error writing to '{filename}': {e}")
             else:
                 print("Invalid syntax. Usage: writefile <filename>")
+
         elif "=" in statement:
             parts = statement.split("=")
             var_name = parts[0].strip()
             var_value = "=".join(parts[1:]).strip()
             self.variables[var_name] = var_value
             print(f"Variable '{var_name}' set to '{var_value}'.")
+
         elif statement == "--amogus":
             print("sus")
+
         else:
-            print("Invalid statement")
+            print("Invalid statement.")
 
     def execute_file(self, filename):
         try:
