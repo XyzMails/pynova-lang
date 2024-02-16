@@ -12,6 +12,7 @@ so its features are not too much its really uh kinda limited cuz its beta
 pynova normally works with the python pynova.py but if u want it like pynova in your terminal then u use the command:
 "./installtocmdscript.sh"
 idk how to do it on windows u have to put it in ur path ig
+i am on arch linux so it works for me idk how on u
 
 # commands:
 so launch commands are:
